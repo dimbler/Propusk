@@ -33,7 +33,7 @@ public class AdapterHelper {
     ArrayList<Map<String, String>> childDataItem;
 
     // общая коллекция для коллекций элементов
-    ArrayList<ArrayList<Map<String, String>>> childData;
+    ArrayList<ArrayList<Map<String, String>>> childData = new ArrayList<ArrayList<Map<String, String>>>();
     // в итоге получится childData = ArrayList<childDataItem>
 
     // список аттрибутов группы или элемента
@@ -48,8 +48,8 @@ public class AdapterHelper {
     SimpleExpandableListAdapter adapter;
 
     public void CreateCollection() {
-        // создаем коллекцию для коллекций элементов
-        childData = new ArrayList<ArrayList<Map<String, String>>>();
+        // очищаем коллекцию для коллекций элементов
+        childData.clear();
 
         for (String cur_url: url_str) {
 
@@ -58,29 +58,32 @@ public class AdapterHelper {
             try {
 
                 JSONObject jsonFromSQL = new GetSQLData(ctx).execute(cur_url).get();
+                if(jsonFromSQL != null) {
+                    try {
+                        int values_count = Integer.parseInt(jsonFromSQL.getString("iTotalDisplayRecords"));
+                        if (values_count > 0) {
+                            JSONArray SQL_data = jsonFromSQL.getJSONArray("aaData");
+                            for (int i = 0; i < SQL_data.length(); i++) {
+                                JSONArray row = SQL_data.getJSONArray(i);
+                                Log.d(LOG_TAG, row.getString(1));
+                                m = new HashMap<String, String>();
+                                m.put(ATTR_ID, row.getString(0));//ид посетителя
+                                m.put(ATTR_POSETITEL_NAME, row.getString(1)); // фио посетителя или авто
+                                childDataItem.add(m);
+                            }
 
-                try {
-                    int values_count = Integer.parseInt(jsonFromSQL.getString("iTotalDisplayRecords"));
-                    if (values_count > 0) {
-                        JSONArray SQL_data = jsonFromSQL.getJSONArray("aaData");
-                        for (int i = 0; i < SQL_data.length(); i++) {
-                            JSONArray row = SQL_data.getJSONArray(i);
-                            Log.d(LOG_TAG, row.getString(1));
-                            m = new HashMap<String, String>();
-                            m.put(ATTR_ID, row.getString(0));//ид посетителя
-                            m.put(ATTR_POSETITEL_NAME, row.getString(1)); // фио посетителя или авто
-                            childDataItem.add(m);
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
+                childData.add(childDataItem);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-            childData.add(childDataItem);
+
         }
     }
 

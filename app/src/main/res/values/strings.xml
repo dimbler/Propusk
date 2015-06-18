@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Propusk</string>
+    <string name="app_name">Система пропусков</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -7,4 +7,6 @@
     <string name="get_data_fail">Ошибка подключения к серверу</string>
     <string name="pedestrian">Посетители</string>
     <string name="auto">Автомобили</string>
+    <string name="refresh">Обновить</string>
+    <string name="exit">Выход</string>
 </resources>

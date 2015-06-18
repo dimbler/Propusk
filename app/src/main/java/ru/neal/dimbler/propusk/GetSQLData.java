@@ -9,6 +9,7 @@ package ru.neal.dimbler.propusk;
         import java.io.InputStream;
         import java.io.InputStreamReader;
         import java.io.UnsupportedEncodingException;
+        import java.net.URI;
         import java.security.Certificate;
         import java.security.KeyManagementException;
         import java.security.KeyStore;
@@ -45,6 +46,7 @@ package ru.neal.dimbler.propusk;
         import android.content.res.AssetManager;
         import android.net.ConnectivityManager;
         import android.net.NetworkInfo;
+        import android.net.Uri;
         import android.os.AsyncTask;
         import android.util.Log;
         import org.apache.http.client.methods.HttpPost;
@@ -139,7 +141,16 @@ public class GetSQLData extends AsyncTask<String, Void, JSONObject> {
             ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, registry);
             DefaultHttpClient httpclient = new DefaultHttpClient(manager, params);
 
-            HttpGet GetRequest = new HttpGet(paramms[0]);
+            String req_url = paramms[0];
+
+            if (paramms.length >1) {
+                Uri.Builder builder = Uri.parse(paramms[0]).buildUpon();
+                builder.appendQueryParameter("id", paramms[1]);
+                builder.appendQueryParameter("stime", "true");
+                req_url = builder.build().toString();
+            }
+
+            HttpGet GetRequest = new HttpGet(req_url);
             String response;
 
             try {
@@ -176,9 +187,11 @@ public class GetSQLData extends AsyncTask<String, Void, JSONObject> {
         {
             try
             {
-                String total_record = result.getString("iTotalDisplayRecords");
 
-                Toast.makeText(context, context.getResources().getString(R.string.get_data_ok) + " " + total_record, Toast.LENGTH_SHORT).show();
+                String total_record = result.getString("iTotalDisplayRecords");
+                Log.d(LOG_TAG, context.getResources().getString(R.string.get_data_ok) + " " + total_record);
+                //Toast.makeText(context, context.getResources().getString(R.string.get_data_ok) + " " + total_record, Toast.LENGTH_SHORT).show();
+
             }
             catch (Exception e)
             {
